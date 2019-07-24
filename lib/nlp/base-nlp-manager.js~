@@ -23,8 +23,13 @@
 
 const fs = require('fs');
 const Handlebars = require('handlebars');
+const NluManager = require('../nlu/nlu-manager');
+const NerManager = require('../ner/ner-manager');
+const { SentimentManager } = require('../sentiment');
+const { ActionManager, NlgManager } = require('../nlg');
+const { SlotManager } = require('../slot');
+const NlpUtil = require('./nlp-util');
 const NlpExcelReader = require('./nlp-excel-reader');
-const BaseNlpManager = require('./base-nlp-manager');
 
 /**
  * Class for the NLP Manager.
@@ -370,11 +375,7 @@ class NlpManager {
         optionalUtterance,
         domainName
       );
-      if (
-        optional &&
-        (optional.score > result.score || result.intent === 'None')
-      ) {
-        optional.utterance = result.utterance;
+      if (optional && optional.length > 0 && optional.score > result.score) {
         result = optional;
       }
     }
@@ -478,8 +479,17 @@ class NlpManager {
     reader.load(fileName);
   }
 
-  compileAnswer(answer, context) {
-    return Handlebars.compile(answer)(context);
+  /**
+   * Begin Edit Mode.
+   * That means clear all, but the NLU Manager, that is put into edit mode.
+   */
+  beginEdit() {
+    this.nluManager.beginEdit();
+    this.nerManager = new NerManager(this.settings.ner);
+    this.nlgManager = new NlgManager(this.settings.nlg);
+    this.actionManager = new ActionManager(this.settings.action);
+    this.sentiment = new SentimentManager(this.settings.sentiment);
+    this.slotManager.clear();
   }
 }
 
