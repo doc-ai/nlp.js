@@ -1,0 +1,8 @@
+steps:
+# Mirror private repo to public repo
+- name: 'us.gcr.io/docai-neuron/doc.ai/nrn-priv-to-pub:latest'
+  id: "git-mirror"
+  args:
+  - 'bash'
+  - '/builder/make-public.sh'
+  - '$REPO_NAME'
