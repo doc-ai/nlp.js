@@ -1,5 +1,5 @@
 /*
- * Copyright (c) AXA Shared Services Spain S.A.
+ * Copyright (c) AXA Group Operations Spain S.A.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -275,10 +275,22 @@ describe('NLU Manager', () => {
       const manager = new NluManager();
       manager.addLanguage(['en', 'es']);
       manager.addDocument('es', 'Dónde están las llaves', 'keys');
+      expect(manager.domainManagers.es.domains.master_domain.docs).toHaveLength(1);
+    });
+    test('A document can be added training by domain', () => {
+      const manager = new NluManager({ trainByDomain: true });
+      manager.addLanguage(['en', 'es']);
+      manager.addDocument('es', 'Dónde están las llaves', 'keys');
       expect(manager.domainManagers.es.domains.default.docs).toHaveLength(1);
     });
     test('If locale is not defined, then guess it', () => {
       const manager = new NluManager();
+      manager.addLanguage(['en', 'es']);
+      manager.addDocument(undefined, 'Dónde están las llaves', 'keys');
+      expect(manager.domainManagers.es.domains.master_domain.docs).toHaveLength(1);
+    });
+    test('If locale is not defined, then guess it training by domain', () => {
+      const manager = new NluManager({ trainByDomain: true });
       manager.addLanguage(['en', 'es']);
       manager.addDocument(undefined, 'Dónde están las llaves', 'keys');
       expect(manager.domainManagers.es.domains.default.docs).toHaveLength(1);
@@ -305,10 +317,24 @@ describe('NLU Manager', () => {
       manager.addLanguage(['en', 'es']);
       manager.addDocument('es', 'Dónde están las llaves', 'keys');
       manager.removeDocument('es', 'Dónde están las llaves', 'keys');
+      expect(manager.domainManagers.es.domains.master_domain.docs).toHaveLength(0);
+    });
+    test('A document can be removed training by domain', () => {
+      const manager = new NluManager({ trainByDomain: true });
+      manager.addLanguage(['en', 'es']);
+      manager.addDocument('es', 'Dónde están las llaves', 'keys');
+      manager.removeDocument('es', 'Dónde están las llaves', 'keys');
       expect(manager.domainManagers.es.domains.default.docs).toHaveLength(0);
     });
     test('If locale is not defined then guess it', () => {
       const manager = new NluManager();
+      manager.addLanguage(['en', 'es']);
+      manager.addDocument('es', 'Dónde están las llaves', 'keys');
+      manager.removeDocument(undefined, 'Dónde están las llaves', 'keys');
+      expect(manager.domainManagers.es.domains.master_domain.docs).toHaveLength(0);
+    });
+    test('If locale is not defined then guess it training by domain', () => {
+      const manager = new NluManager({ trainByDomain: true });
       manager.addLanguage(['en', 'es']);
       manager.addDocument('es', 'Dónde están las llaves', 'keys');
       manager.removeDocument(undefined, 'Dónde están las llaves', 'keys');
@@ -332,7 +358,7 @@ describe('NLU Manager', () => {
 
   describe('Edit Mode', () => {
     test('When edit mode begans, all domains pass to edit mode', () => {
-      const manager = new NluManager({ languages: ['en', 'es'] });
+      const manager = new NluManager({ languages: ['en', 'es'], trainByDomain: true });
       manager.assignDomain('en', 'a', 'domain1');
       manager.assignDomain('en', 'b', 'domain1');
       manager.assignDomain('en', 'c', 'domain2');
@@ -397,8 +423,8 @@ describe('NLU Manager', () => {
   });
 
   describe('Get Classifications', () => {
-    test('Can classify if I provide locale', async () => {
-      const manager = new NluManager({ languages: ['en', 'es'] });
+    test('Can classify if I provide locale without using None Feature', async () => {
+      const manager = new NluManager({ languages: ['en', 'es'], useNoneFeature: false, trainByDomain: true });
       addFoodDomainEn(manager);
       addPersonalityDomainEn(manager);
       addFoodDomainEs(manager);
@@ -415,11 +441,29 @@ describe('NLU Manager', () => {
       expect(actual.classifications[0].label).toEqual('agent.acquaintance');
       expect(actual.classifications[0].value).toBeGreaterThan(0.8);
     });
+    test('Can classify if I provide locale', async () => {
+      const manager = new NluManager({ languages: ['en', 'es'], trainByDomain: true });
+      addFoodDomainEn(manager);
+      addPersonalityDomainEn(manager);
+      addFoodDomainEs(manager);
+      addPersonalityDomainEs(manager);
+      await manager.train();
+      const actual = manager.getClassifications('es', 'dime quién eres tú');
+      expect(actual.domain).toEqual('personality');
+      expect(actual.language).toEqual('Spanish');
+      expect(actual.locale).toEqual('es');
+      expect(actual.localeGuessed).toBeFalsy();
+      expect(actual.localeIso2).toEqual('es');
+      expect(actual.utterance).toEqual('dime quién eres tú');
+      expect(actual.classifications).toHaveLength(3);
+      expect(actual.classifications[0].label).toEqual('agent.acquaintance');
+      expect(actual.classifications[0].value).toBeGreaterThan(0.8);
+    });
   });
 
   describe('toObj and fromObj', () => {
-    test('Can export and import', async () => {
-      const manager = new NluManager({ languages: ['en', 'es'] });
+    test('Can export and import without using None Feature', async () => {
+      const manager = new NluManager({ languages: ['en', 'es'], useNoneFeature: false, trainByDomain: true });
       addFoodDomainEn(manager);
       addPersonalityDomainEn(manager);
       addFoodDomainEs(manager);
@@ -438,14 +482,34 @@ describe('NLU Manager', () => {
       expect(actual.classifications[0].label).toEqual('agent.acquaintance');
       expect(actual.classifications[0].value).toBeGreaterThan(0.8);
     });
+    test('Can export and import', async () => {
+      const manager = new NluManager({ languages: ['en', 'es'], trainByDomain: true });
+      addFoodDomainEn(manager);
+      addPersonalityDomainEn(manager);
+      addFoodDomainEs(manager);
+      addPersonalityDomainEs(manager);
+      await manager.train();
+      const clone = new NluManager();
+      clone.fromObj(manager.toObj());
+      const actual = clone.getClassifications('es', 'dime quién eres tú');
+      expect(actual.domain).toEqual('personality');
+      expect(actual.language).toEqual('Spanish');
+      expect(actual.locale).toEqual('es');
+      expect(actual.localeGuessed).toBeFalsy();
+      expect(actual.localeIso2).toEqual('es');
+      expect(actual.utterance).toEqual('dime quién eres tú');
+      expect(actual.classifications).toHaveLength(3);
+      expect(actual.classifications[0].label).toEqual('agent.acquaintance');
+      expect(actual.classifications[0].value).toBeGreaterThan(0.8);
+    });
   });
 
   describe('Is equal classification', () => {
-    test('Should return true if all classifications have 0.5 score', () => {
+    test('Should return true if the two frist classifications have the same score', () => {
       const manager = new NluManager();
       const classifications = [];
-      classifications.push({ label: 'a', value: 0.5 });
-      classifications.push({ label: 'b', value: 0.5 });
+      classifications.push({ label: 'a', value: 0.6 });
+      classifications.push({ label: 'b', value: 0.6 });
       classifications.push({ label: 'c', value: 0.5 });
       classifications.push({ label: 'd', value: 0.5 });
       classifications.push({ label: 'e', value: 0.5 });
@@ -453,11 +517,11 @@ describe('NLU Manager', () => {
       const result = manager.isEqualClassification(classifications);
       expect(result).toBeTruthy();
     });
-    test('Should return false if at least one classification score is not 0.5', () => {
+    test('Should return false if first score is different than second score', () => {
       const manager = new NluManager();
       const classifications = [];
-      classifications.push({ label: 'a', value: 0.5 });
-      classifications.push({ label: 'b', value: 0.5 });
+      classifications.push({ label: 'a', value: 0.7 });
+      classifications.push({ label: 'b', value: 0.6 });
       classifications.push({ label: 'c', value: 0.6 });
       classifications.push({ label: 'd', value: 0.5 });
       classifications.push({ label: 'e', value: 0.5 });

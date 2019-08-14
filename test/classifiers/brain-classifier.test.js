@@ -1,5 +1,5 @@
 /*
- * Copyright (c) AXA Shared Services Spain S.A.
+ * Copyright (c) AXA Group Operations Spain S.A.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -73,14 +73,14 @@ describe('Brain Classifier', () => {
       expect(classifier.settings.config).toEqual({
         activation: 'leaky-relu',
         hiddenLayers: [],
-        learningRate: 0.8,
+        learningRate: 0.7,
         errorThresh: 0.00005,
         iterations: 20000,
         momentum: 0.5,
         deltaErrorThresh: 0.000001,
         timeout: 120000,
         maxDecimals: 9,
-        leakyReluAlpha: 0.06,
+        leakyReluAlpha: 0.08,
       });
     });
     test('I can provide a configuration', () => {

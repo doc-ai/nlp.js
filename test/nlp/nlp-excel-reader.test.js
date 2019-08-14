@@ -1,5 +1,5 @@
 /*
- * Copyright (c) AXA Shared Services Spain S.A.
+ * Copyright (c) AXA Group Operations Spain S.A.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -70,8 +70,46 @@ describe('NLP Excel Reader', () => {
       const reader = new NlpExcelReader(manager);
       reader.load('./test/nlp/rules.xls');
       expect(
+        manager.nluManager.domainManagers.en.domains.master_domain.docs
+      ).toHaveLength(5);
+      expect(
+        manager.nluManager.domainManagers.en.domains.master_domain.docs[0].intent
+      ).toEqual('whois');
+      expect(
+        manager.nluManager.domainManagers.en.domains.master_domain.docs[1].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.en.domains.master_domain.docs[2].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.en.domains.master_domain.docs[3].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.en.domains.master_domain.docs[4].intent
+      ).toEqual('realname');
+      expect(
+        manager.nluManager.domainManagers.es.domains.master_domain.docs
+      ).toHaveLength(4);
+      expect(
+        manager.nluManager.domainManagers.es.domains.master_domain.docs[0].intent
+      ).toEqual('whois');
+      expect(
+        manager.nluManager.domainManagers.es.domains.master_domain.docs[1].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.es.domains.master_domain.docs[2].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.es.domains.master_domain.docs[3].intent
+      ).toEqual('realname');
+    });
+    test('The classifiers should contain the intent definition when training by domain', () => {
+      const manager = new NlpManager({ nlu: { trainByDomain: true }});
+      const reader = new NlpExcelReader(manager);
+      reader.load('./test/nlp/rules.xls');
+      expect(
         manager.nluManager.domainManagers.en.domains.default.docs
-      ).toHaveLength(3);
+      ).toHaveLength(5);
       expect(
         manager.nluManager.domainManagers.en.domains.default.docs[0].intent
       ).toEqual('whois');
@@ -80,6 +118,12 @@ describe('NLP Excel Reader', () => {
       ).toEqual('whereis');
       expect(
         manager.nluManager.domainManagers.en.domains.default.docs[2].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.en.domains.default.docs[3].intent
+      ).toEqual('whereis');
+      expect(
+        manager.nluManager.domainManagers.en.domains.default.docs[4].intent
       ).toEqual('realname');
       expect(
         manager.nluManager.domainManagers.es.domains.default.docs
