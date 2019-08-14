@@ -33,7 +33,15 @@ describe('Aggressive Tokenizer Sv', () => {
   describe('Tokenize', () => {
     test('It must tokenize simple sentence', () => {
       const tokenizer = new AggressiveTokenizerSv();
-      const expected = ['När', 'natten', 'kommer', 'och', 'jorden', 'är', 'mörk'];
+      const expected = [
+        'När',
+        'natten',
+        'kommer',
+        'och',
+        'jorden',
+        'är',
+        'mörk',
+      ];
       const actual = tokenizer.tokenize('När natten kommer och jorden är mörk');
       expect(actual).toEqual(expected);
     });

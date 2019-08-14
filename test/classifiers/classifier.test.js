@@ -254,7 +254,7 @@ describe('Classifier', () => {
       const classifier = new Classifier();
       expect(() => {
         classifier.classifyObservation();
-      }).toThrowError(
+      }).toThrow(
         'This method is not implemented. Must be implemented by child classes.'
       );
     });

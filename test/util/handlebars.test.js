@@ -40,7 +40,7 @@ describe('Handlebars', () => {
       const context = {
         name: 'Jesus',
         a: 43,
-      }
+      };
       const answer = Handlebars.compile('Hello {{ name }} {{ a }}')(context);
       expect(answer).toEqual('Hello Jesus 43');
     });
@@ -48,9 +48,11 @@ describe('Handlebars', () => {
       const context = {
         name: 'Jesus',
         a: 43,
-        double: x => x * 2
-      }
-      const answer = Handlebars.compile('Hello {{ name }} {{ double(a) }}')(context);
+        double: x => x * 2,
+      };
+      const answer = Handlebars.compile('Hello {{ name }} {{ double(a) }}')(
+        context
+      );
       expect(answer).toEqual('Hello Jesus 86');
     });
     it('Should be able to do operations with variables of the context', () => {
@@ -58,9 +60,11 @@ describe('Handlebars', () => {
         name: 'Jesus',
         a: 43,
         b: 10,
-        double: x => x * 2
-      }
-      const answer = Handlebars.compile('Hello {{ name }} {{ double(a + b) }}')(context);
+        double: x => x * 2,
+      };
+      const answer = Handlebars.compile('Hello {{ name }} {{ double(a + b) }}')(
+        context
+      );
       expect(answer).toEqual('Hello Jesus 106');
     });
   });

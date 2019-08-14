@@ -42,14 +42,55 @@ describe('Treebank Word Tokenizer', () => {
   describe('Tokenize', () => {
     test('It must tokenize simple sentence', () => {
       const tokenizer = new TreebankWordTokenizer();
-      const expected = ['If', 'we', '\'all', '\'', 'ca', 'n\'t', 'go.', 'I', '\'ll', 'stay', 'home', '.'];
-      const actual = tokenizer.tokenize('If we \'all\' can\'t go. I\'ll stay home.');
+      const expected = [
+        'If',
+        'we',
+        "'all",
+        "'",
+        'ca',
+        "n't",
+        'go.',
+        'I',
+        "'ll",
+        'stay',
+        'home',
+        '.',
+      ];
+      const actual = tokenizer.tokenize(
+        "If we 'all' can't go. I'll stay home."
+      );
       expect(actual).toEqual(expected);
     });
     test('It must tokenize complex sentence', () => {
       const tokenizer = new TreebankWordTokenizer();
-      const expected = ['If', 'we', '\'all', '\'', 'ca', 'n\'t', 'go.', 'I', '\'ll', 'stay', 'home.', 'If', 'we', '\'all', '\'', 'ca', 'n\'t', 'go.', 'I', '\'ll', 'stay', 'home', '.'];
-      const actual = tokenizer.tokenize('If we \'all\' can\'t go. I\'ll stay home. If we \'all\' can\'t go. I\'ll stay home.');
+      const expected = [
+        'If',
+        'we',
+        "'all",
+        "'",
+        'ca',
+        "n't",
+        'go.',
+        'I',
+        "'ll",
+        'stay',
+        'home.',
+        'If',
+        'we',
+        "'all",
+        "'",
+        'ca',
+        "n't",
+        'go.',
+        'I',
+        "'ll",
+        'stay',
+        'home',
+        '.',
+      ];
+      const actual = tokenizer.tokenize(
+        "If we 'all' can't go. I'll stay home. If we 'all' can't go. I'll stay home."
+      );
       expect(actual).toEqual(expected);
     });
   });

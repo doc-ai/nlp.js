@@ -134,7 +134,7 @@ describe('Vector', () => {
       const operand = [1, -1, 2, -2, 3, -3, 4];
       expect(() => {
         input.runOperation(operand, (a, b) => a * b);
-      }).toThrowError('Cannot operate two vectors with different dimensions.');
+      }).toThrow('Cannot operate two vectors with different dimensions.');
     });
   });
 
@@ -170,7 +170,7 @@ describe('Vector', () => {
       const other = new Vector([4, 3, 2]);
       expect(() => {
         input.subtract(other);
-      }).toThrowError('Cannot operate two vectors with different dimensions.');
+      }).toThrow('Cannot operate two vectors with different dimensions.');
     });
   });
 
@@ -212,7 +212,7 @@ describe('Vector', () => {
       const other = new Vector([1, 2, 3, 4, 5]);
       expect(() => {
         input.dot(other);
-      }).toThrowError('Cannot operate two vectors with different dimensions.');
+      }).toThrow('Cannot operate two vectors with different dimensions.');
     });
   });
 
